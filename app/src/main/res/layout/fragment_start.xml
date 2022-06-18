@@ -14,9 +14,7 @@
             android:id="@+id/colorPicker"
             android:layout_width="113dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="102dp"
             android:layout_marginTop="100dp"
-            android:layout_marginEnd="102dp"
             android:backgroundTint="@color/blue"
             android:text="Выбор цвета"
             android:textColor="@color/white"
@@ -46,15 +44,12 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="166dp"
             android:layout_marginTop="60dp"
-            android:layout_marginEnd="167dp"
             android:text="Яркость"
             android:textColor="@color/dark_grey"
             android:textSize="20dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/colorPicker" />
 
@@ -62,12 +57,12 @@
             android:id="@+id/brightnessStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="188dp"
             android:layout_marginTop="12dp"
             android:text="100"
             android:textColor="@color/dark_grey"
             android:textSize="20sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
@@ -86,16 +81,16 @@
 
         <Switch
             android:id="@+id/switcher"
-            android:layout_width="wrap_content"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="182dp"
-            android:layout_marginTop="81dp"
-            android:layout_marginEnd="183dp"
+
+            android:layout_marginTop="32dp"
             android:gravity="center_horizontal|center_vertical"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/brightnessStatus"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline5"
