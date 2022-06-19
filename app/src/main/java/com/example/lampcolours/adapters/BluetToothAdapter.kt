@@ -3,17 +3,26 @@ package com.example.lampcolours.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lampcolours.R
 import com.example.lampcolours.bt.BluetoothItem
 import com.example.lampcolours.databinding.ItemLayoutBinding
+import com.example.lampcolours.screens.BlueToothFragment.BlueToothFragment
 
 
 class BluetToothAdapter :
     ListAdapter<BluetoothItem, BluetToothAdapter.ArrayViewHolder>(ArrayComparator()) {
 
+    override fun onViewAttachedToWindow(holder: ArrayViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        holder.itemView
+            .setOnClickListener{ view: View ->
+                BlueToothFragment.onBtItemClicked(getItem(holder.adapterPosition), view)
+            }
+    }
 
     class ArrayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ItemLayoutBinding.bind(view)
@@ -51,4 +60,6 @@ class BluetToothAdapter :
     override fun onBindViewHolder(holder: ArrayViewHolder, position: Int) {
         holder.setData(getItem(position))
     }
+
+
 }

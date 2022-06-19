@@ -12,12 +12,15 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 
 import androidx.fragment.app.Fragment
 import com.example.lampcolours.R
 import com.example.lampcolours.adapters.BluetToothAdapter
+import com.example.lampcolours.bt.BlueToothConnection
 import com.example.lampcolours.bt.BluetoothItem
 import com.example.lampcolours.databinding.FragmentBlueToothBinding
 import kotlinx.android.synthetic.main.fragment_blue_tooth.*
@@ -30,6 +33,7 @@ class BlueToothFragment : Fragment() {
     val btAdapter by lazy { btManager?.adapter }
     private lateinit var adapter: BluetToothAdapter
     val tempList = ArrayList<BluetoothItem>()
+    lateinit var btConnection: BlueToothConnection
 
 
     override fun onCreateView(
@@ -39,16 +43,23 @@ class BlueToothFragment : Fragment() {
         binding = FragmentBlueToothBinding.inflate(inflater, container, false)
         val fab = binding.floatingActionButton
         fab.imageTintList = ColorStateList.valueOf(Color.WHITE)
+        val bap = binding.connectButton
+        bap.imageTintList = ColorStateList.valueOf(Color.WHITE)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = BluetToothAdapter()
+        btConnection = btAdapter?.let { BlueToothConnection(it) }!!
         setImage()
+
         binding.floatingActionButton.setOnClickListener {
             bTSwitcher()
+        }
 
+        binding.connectButton.setOnClickListener {
+            btConnection.connect(currentMAC)
         }
     }
 
@@ -60,9 +71,10 @@ class BlueToothFragment : Fragment() {
             btAdapter?.disable()
             floatingActionButton.setImageResource(R.drawable.ic_enable_bluetooth_white)
             tempList.clear()
+            binding.rvBtItems.adapter = adapter
+            adapter.submitList(tempList)
         }
     }
-
 
     private fun setImage() {
         if (btAdapter?.isEnabled == true) {
@@ -102,4 +114,11 @@ class BlueToothFragment : Fragment() {
         adapter.submitList(tempList)
     }
 
+    companion object {
+        lateinit var currentMAC: String
+        fun onBtItemClicked(item: BluetoothItem, view: View) {
+            currentMAC = item.mac
+            Toast.makeText(view.context, "Current MAC: $currentMAC", Toast.LENGTH_LONG).show()
+        }
+    }
 }
