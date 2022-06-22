@@ -5,7 +5,9 @@ import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -33,7 +35,9 @@ class BlueToothFragment : Fragment() {
     val btAdapter by lazy { btManager?.adapter }
     private lateinit var adapter: BluetToothAdapter
     val tempList = ArrayList<BluetoothItem>()
-    lateinit var btConnection: BlueToothConnection
+    val SHARED_PREF_FILE_NAME = "SharedPrefs"
+    val CURRENT_MAC = "mac"
+    private lateinit var sharedPref: SharedPreferences
 
 
     override fun onCreateView(
@@ -51,7 +55,6 @@ class BlueToothFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = BluetToothAdapter()
-        btConnection = btAdapter?.let { BlueToothConnection(it) }!!
         setImage()
 
         binding.floatingActionButton.setOnClickListener {
@@ -59,7 +62,10 @@ class BlueToothFragment : Fragment() {
         }
 
         binding.connectButton.setOnClickListener {
-            btConnection.connect(currentMAC)
+            if (currentMAC != null) {
+                saveData(currentMAC)
+            }
+            Toast.makeText(view.context, "Saved MAC: $currentMAC", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -67,6 +73,7 @@ class BlueToothFragment : Fragment() {
         if (btAdapter?.isEnabled == false) {
             val i = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(i, REQUEST_ENABLE_BT)
+            binding.connectButton.show()
         } else {
             btAdapter?.disable()
             floatingActionButton.setImageResource(R.drawable.ic_enable_bluetooth_white)
@@ -80,9 +87,11 @@ class BlueToothFragment : Fragment() {
         if (btAdapter?.isEnabled == true) {
             floatingActionButton.setImageResource(R.drawable.ic_disable_bluetooth)
             binding.rvBtItems.adapter = adapter
+            binding.connectButton.show()
             getPairedDevices()
         } else {
             floatingActionButton.setImageResource(R.drawable.ic_enable_bluetooth_white)
+            binding.connectButton.hide()
         }
     }
 
@@ -120,5 +129,15 @@ class BlueToothFragment : Fragment() {
             currentMAC = item.mac
             Toast.makeText(view.context, "Current MAC: $currentMAC", Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun saveData(mac: String): SharedPreferences {
+
+        sharedPref =
+            requireActivity().getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putString(CURRENT_MAC, mac)
+        editor.apply()
+        return sharedPref
     }
 }

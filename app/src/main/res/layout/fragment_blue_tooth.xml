@@ -32,7 +32,7 @@
             android:layout_marginBottom="5dp"
             android:clickable="true"
             android:focusable="true"
-            android:src="@drawable/ic_connect"
+            android:src="@drawable/ic_save"
             app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
             app:layout_constraintEnd_toEndOf="parent" />
 

@@ -21,6 +21,7 @@ class BluetToothAdapter :
         holder.itemView
             .setOnClickListener{ view: View ->
                 BlueToothFragment.onBtItemClicked(getItem(holder.adapterPosition), view)
+
             }
     }
 

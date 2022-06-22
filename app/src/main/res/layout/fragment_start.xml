@@ -33,7 +33,7 @@
             android:clickable="true"
             android:focusable="true"
             android:max="100"
-            android:min="1"
+            android:min="4"
             android:progressTint="@color/dark_grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +83,6 @@
             android:id="@+id/switcher"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="32dp"
             android:gravity="center_horizontal|center_vertical"
             android:minWidth="48dp"
@@ -100,7 +99,6 @@
             app:layout_constraintGuide_begin="205dp"
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintWidth_percent="50" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

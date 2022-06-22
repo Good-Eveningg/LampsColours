@@ -2,6 +2,9 @@ package com.example.lampcolours.screens.StartFragment
 
 import android.R
 import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_start.view.*
 
 import vadiole.colorpicker.ColorModel
 import vadiole.colorpicker.ColorPickerDialog
+import java.lang.Exception
 
 
 class StartFragment : Fragment() {
@@ -36,13 +40,15 @@ class StartFragment : Fragment() {
     private lateinit var adapter: BluetToothAdapter
     lateinit var btConnection: BlueToothConnection
     lateinit var binding: FragmentStartBinding
+    val SHARED_PREF_FILE_NAME = "SharedPrefs"
+    val CURRENT_MAC = "mac"
     var brightness = 10
     var onoff = 0
     var red = 255
     var green = 255
     var blue = 255
     lateinit var color: Color
-
+    lateinit var currentMac: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,14 +60,16 @@ class StartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        color = Color.valueOf(red.toFloat(), green.toFloat(), blue.toFloat())
         val brightnessSeek = binding.seekBar
         val brightnessText = binding.brightnessStatus
         adapter = BluetToothAdapter()
         btConnection = btAdapter?.let { BlueToothConnection(it) }!!
-
+        getSharedPref()
         val onoffswitcher = binding.switcher
         val colorpicker = binding.colorPicker
+        if (btAdapter?.isEnabled == true && currentMac != null) {
+            btConnection.connect(currentMac)
+        }
 
         brightnessSeek.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -74,7 +82,7 @@ class StartFragment : Fragment() {
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
-
+                brightnessSeek.progress = brightness
             }
 
             override fun onStopTrackingTouch(seek: SeekBar) {
@@ -83,49 +91,60 @@ class StartFragment : Fragment() {
                     context, "Уровень яркости: " + seek.progress + "%",
                     Toast.LENGTH_LONG
                 ).show()
+                if (onoff == 1) {
+                }
             }
 
         })
-        brightnessSeek.setProgress(brightness)
-
+        brightnessSeek.progress = brightness
 
         onoffswitcher.setOnCheckedChangeListener { _, isChecked ->
-            val message: String
-            if (isChecked) {
-
-                message =
-                    "Lamp is ON"
-                onoff = 1
-            } else {
-                message = "Lamp is OFF"
-                onoff = 0
+            try {
+                if (btAdapter?.isEnabled == true) {
+                    onoff = if (isChecked) {
+                        1
+                    } else {
+                        0
+                    }
+                    btConnection.sendMessage("$red $green $blue $brightness $onoff")
+                } else {
+                    Toast.makeText(
+                        context, "Switch on BT",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    context, "Connect to the Device",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-
-            Toast.makeText(
-                context, "$message $red $green $blue $brightness $onoff",
-                Toast.LENGTH_LONG
-            ).show()
-            btConnection.sendMessage("$red $green $blue $brightness $onoff")
         }
 
         colorpicker.setOnClickListener {
-
             val colorPicker: ColorPickerDialog = ColorPickerDialog.Builder()
                 .setInitialColor(Color.rgb(red, green, blue))
                 .setColorModel(ColorModel.RGB)
                 .setColorModelSwitchEnabled(true)
-                .setButtonOkText(android.R.string.ok)
-                .setButtonCancelText(android.R.string.cancel)
+                .setButtonOkText(R.string.ok)
+                .setButtonCancelText(R.string.cancel)
                 .onColorSelected { color: Int ->
                     red = color.red
                     green = color.green
                     blue = color.blue
+                    if (onoff == 1) {
+                        btConnection.sendMessage("$red $green $blue $brightness $onoff")
+                    }
                 }
                 .create()
-
             colorPicker.show(childFragmentManager, "color_picker")
         }
+    }
 
+    private fun getSharedPref(): String? {
+        val sharedPref = context?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+        currentMac = sharedPref?.getString(CURRENT_MAC, null).toString()
+        return sharedPref?.getString(CURRENT_MAC, null)
     }
 
 
