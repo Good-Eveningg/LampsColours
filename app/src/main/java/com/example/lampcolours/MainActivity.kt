@@ -4,15 +4,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import com.example.lampcolours.bt.BluetoothItem
 import com.example.lampcolours.screens.BlueToothFragment.BlueToothFragment
 import com.example.lampcolours.screens.BlueToothFragment.REQUEST_ENABLE_BT
 import com.example.lampcolours.screens.StartFragment.StartFragment
@@ -56,8 +50,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -84,5 +76,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun navigate() {
+        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
+            .commit()
+    }
 }
 

@@ -20,11 +20,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import com.example.lampcolours.MainActivity
 import com.example.lampcolours.R
 import com.example.lampcolours.adapters.BluetToothAdapter
 import com.example.lampcolours.bt.BlueToothConnection
 import com.example.lampcolours.bt.BluetoothItem
 import com.example.lampcolours.databinding.FragmentBlueToothBinding
+import com.example.lampcolours.screens.StartFragment.StartFragment
 import kotlinx.android.synthetic.main.fragment_blue_tooth.*
 
 const val REQUEST_ENABLE_BT = 15
@@ -37,6 +40,7 @@ class BlueToothFragment : Fragment() {
     val tempList = ArrayList<BluetoothItem>()
     val SHARED_PREF_FILE_NAME = "SharedPrefs"
     val CURRENT_MAC = "mac"
+    lateinit var mainActivity: MainActivity
     private lateinit var sharedPref: SharedPreferences
 
 
@@ -56,16 +60,15 @@ class BlueToothFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter = BluetToothAdapter()
         setImage()
-
+        mainActivity = (activity as MainActivity)
         binding.floatingActionButton.setOnClickListener {
             bTSwitcher()
         }
 
         binding.connectButton.setOnClickListener {
-            if (currentMAC != null) {
-                saveData(currentMAC)
-            }
+            currentMAC?.let { saveData(it) }
             Toast.makeText(view.context, "Saved MAC: $currentMAC", Toast.LENGTH_LONG).show()
+            mainActivity.navigate()
         }
     }
 
@@ -124,7 +127,7 @@ class BlueToothFragment : Fragment() {
     }
 
     companion object {
-        lateinit var currentMAC: String
+        var currentMAC: String? = null
         fun onBtItemClicked(item: BluetoothItem, view: View) {
             currentMAC = item.mac
             Toast.makeText(view.context, "Current MAC: $currentMAC", Toast.LENGTH_LONG).show()
