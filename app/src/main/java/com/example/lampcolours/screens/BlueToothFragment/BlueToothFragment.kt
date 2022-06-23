@@ -132,7 +132,6 @@ class BlueToothFragment : Fragment() {
     }
 
     private fun saveData(mac: String): SharedPreferences {
-
         sharedPref =
             requireActivity().getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
         val editor = sharedPref.edit()

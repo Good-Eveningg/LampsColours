@@ -3,8 +3,6 @@ package com.example.lampcolours.screens.StartFragment
 import android.R
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,11 +17,7 @@ import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
 import com.example.lampcolours.adapters.BluetToothAdapter
 import com.example.lampcolours.bt.BlueToothConnection
-
 import com.example.lampcolours.databinding.FragmentStartBinding
-import kotlinx.android.synthetic.main.fragment_start.*
-import kotlinx.android.synthetic.main.fragment_start.view.*
-
 import vadiole.colorpicker.ColorModel
 import vadiole.colorpicker.ColorPickerDialog
 import java.lang.Exception
@@ -79,6 +73,7 @@ class StartFragment : Fragment() {
             ) {
                 brightness = brightnessSeek.progress
                 brightnessText.text = brightness.toString()
+
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
@@ -92,11 +87,13 @@ class StartFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
                 if (onoff == 1) {
+                    btConnection.sendMessage("$red $green $blue $brightness $onoff")
                 }
             }
 
         })
         brightnessSeek.progress = brightness
+
 
         onoffswitcher.setOnCheckedChangeListener { _, isChecked ->
             try {
