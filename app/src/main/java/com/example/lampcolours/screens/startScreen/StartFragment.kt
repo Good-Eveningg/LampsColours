@@ -1,4 +1,4 @@
-package com.example.lampcolours.screens.StartFragment
+package com.example.lampcolours.screens.startScreen
 
 import android.R
 import android.bluetooth.BluetoothManager
@@ -17,8 +17,9 @@ import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
 import com.example.lampcolours.CURRENT_MAC
 import com.example.lampcolours.SHARED_PREF_FILE_NAME
-import com.example.lampcolours.adapters.BluetToothAdapter
-import com.example.lampcolours.bt.BlueToothConnection
+import com.example.lampcolours.screens.adapters.DevicesListAvailableForBlueToothConnectAdapter
+import com.example.lampcolours.data.repositories.blueToothRepo.BlueToothRepoImpl
+import com.example.lampcolours.data.blueTooth.ConnectedDeviceCommunicationImpl
 import com.example.lampcolours.databinding.FragmentStartBinding
 import vadiole.colorpicker.ColorModel
 import vadiole.colorpicker.ColorPickerDialog
@@ -33,8 +34,8 @@ class StartFragment : Fragment() {
         )
     }
     private val btAdapter by lazy { btManager?.adapter }
-    private lateinit var adapter: BluetToothAdapter
-    lateinit var btConnection: BlueToothConnection
+    private lateinit var adapter: DevicesListAvailableForBlueToothConnectAdapter
+    lateinit var btConnection: BlueToothRepoImpl
     lateinit var binding: FragmentStartBinding
     var brightness = 10
     var onoff = 0
@@ -57,13 +58,17 @@ class StartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val brightnessSeek = binding.seekBar
         val brightnessText = binding.brightnessStatus
-        adapter = BluetToothAdapter()
-        btConnection = btAdapter?.let { BlueToothConnection(it) }!!
+        adapter = DevicesListAvailableForBlueToothConnectAdapter()
+
+        val dsfd  = ConnectedDeviceCommunicationImpl()
+        btConnection = btAdapter?.let {
+            BlueToothRepoImpl(it, )
+        }!!
         getSharedPref()
         val onoffswitcher = binding.switcher
         val colorpicker = binding.colorPicker
         if (btAdapter?.isEnabled == true && currentMac != "null") {
-            btConnection.connect(currentMac)
+            btConnection.connectDeviceToArduino(currentMac)
         }
 
         brightnessSeek.setOnSeekBarChangeListener(object :
@@ -88,7 +93,7 @@ class StartFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
                 if (onoff == 1) {
-                    btConnection.sendMessage("$red $green $blue $brightness $onoff")
+                    btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
                 }
             }
 
@@ -104,7 +109,7 @@ class StartFragment : Fragment() {
                     } else {
                         0
                     }
-                    btConnection.sendMessage("$red $green $blue $brightness $onoff")
+                    btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
                 } else {
                     Toast.makeText(
                         context, "Switch on BT",
@@ -131,7 +136,7 @@ class StartFragment : Fragment() {
                     green = color.green
                     blue = color.blue
                     if (onoff == 1) {
-                        btConnection.sendMessage("$red $green $blue $brightness $onoff")
+                        btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
                     }
                 }
                 .create()

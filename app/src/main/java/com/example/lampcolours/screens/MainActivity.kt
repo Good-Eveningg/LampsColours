@@ -1,4 +1,4 @@
-package com.example.lampcolours
+package com.example.lampcolours.screens
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,23 +8,42 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
-import com.example.lampcolours.screens.BlueToothFragment.BlueToothFragment
-import com.example.lampcolours.screens.BlueToothFragment.REQUEST_ENABLE_BT
-import com.example.lampcolours.screens.StartFragment.StartFragment
+import com.example.lampcolours.CURRENT_MAC
+import com.example.lampcolours.R
+import com.example.lampcolours.SHARED_PREF_FILE_NAME
+import com.example.lampcolours.screens.blueToothScreen.BlueToothFragment
+import com.example.lampcolours.screens.blueToothScreen.REQUEST_ENABLE_BT
+import com.example.lampcolours.screens.startScreen.StartFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var toggle: ActionBarDrawerToggle
-    var lastclicked = 0
-    lateinit var currentMac: String
+    private lateinit var toggle: ActionBarDrawerToggle
+    private var lastclicked = 0
+    private lateinit var currentMac: String
+
+    private val mainActivityViewModel by viewModel<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         permissionsChecker()
-        getSharedPref()
-        firstScreenMode()
+
+        mainActivityViewModel.myCurrentMacLiveData.observe(this) {
+            lastclicked = if (currentMac == "null"){
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.nav_host_fragment,
+                    BlueToothFragment(), "BT"
+                ).commit()
+                2
+            } else{
+                supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
+                    .commit()
+                1
+            }
+        }
+
         toggle = ActionBarDrawerToggle(this, drawer_layout, R.string.open, R.string.close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -81,29 +100,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun navigate() {
-        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
-            .commit()
-    }
-
-    private fun getSharedPref(): String? {
-        val sharedPref = getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
-        currentMac = sharedPref?.getString(CURRENT_MAC, null).toString()
-        return sharedPref?.getString(CURRENT_MAC, null)
-    }
-
     private fun firstScreenMode(){
-        if (currentMac == "null"){
+        lastclicked = if (currentMac == "null"){
             supportFragmentManager.beginTransaction().replace(
                 R.id.nav_host_fragment,
                 BlueToothFragment(), "BT"
             ).commit()
-            lastclicked = 2
+            2
         } else{
             supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
                 .commit()
-            lastclicked = 1
+            1
         }
     }
+
 }
 

@@ -1,17 +1,16 @@
-package com.example.lampcolours.bt
+package com.example.lampcolours.data.blueTooth
 
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.math.sign
 
-class RecieveThread(val bSocket: BluetoothSocket) : Thread() {
+class ArduinoCommunicationImpl() {
     var inputStream: InputStream? = null
     var outputStream: OutputStream? = null
 
-    init {
+    fun initSocket(bSocket: BluetoothSocket) {
         try {
             inputStream = bSocket.inputStream
         } catch (i: IOException) {
@@ -24,7 +23,7 @@ class RecieveThread(val bSocket: BluetoothSocket) : Thread() {
         }
     }
 
-    override fun run() {
+    fun getArduinoResponse() {
         val buf = ByteArray(4)
 
         while (true) {
@@ -38,11 +37,12 @@ class RecieveThread(val bSocket: BluetoothSocket) : Thread() {
         }
     }
 
-    fun sendMessage(byteArray: ByteArray) {
+    fun sendMessageToArduino(byteArray: ByteArray) {
         try {
             outputStream?.write(byteArray)
         } catch (i: IOException) {
 
         }
     }
+
 }

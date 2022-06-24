@@ -1,37 +1,33 @@
-package com.example.lampcolours.adapters
+package com.example.lampcolours.screens.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lampcolours.R
-import com.example.lampcolours.bt.BluetoothItem
+import com.example.lampcolours.models.domain.BluetoothItem
 import com.example.lampcolours.databinding.ItemLayoutBinding
-import com.example.lampcolours.screens.BlueToothFragment.BlueToothFragment
+import com.example.lampcolours.screens.blueToothScreen.BlueToothFragment
 
-
-class BluetToothAdapter :
-    ListAdapter<BluetoothItem, BluetToothAdapter.ArrayViewHolder>(ArrayComparator()) {
+class DevicesListAvailableForBlueToothConnectAdapter :
+    ListAdapter<BluetoothItem, DevicesListAvailableForBlueToothConnectAdapter.ArrayViewHolder>(ArrayComparator()) {
 
     override fun onViewAttachedToWindow(holder: ArrayViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.itemView
-            .setOnClickListener{ view: View ->
+            .setOnClickListener { view: View ->
                 BlueToothFragment.onBtItemClicked(getItem(holder.adapterPosition), view)
-
             }
     }
 
     class ArrayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val binding = ItemLayoutBinding.bind(view)
+        private val binding = ItemLayoutBinding.bind(view)
 
         fun setData(item: BluetoothItem) {
             binding.name.text = item.name
             binding.mac.text = item.mac
-
         }
 
         companion object {
@@ -51,7 +47,6 @@ class BluetToothAdapter :
         override fun areContentsTheSame(oldItem: BluetoothItem, newItem: BluetoothItem): Boolean {
             return oldItem == newItem
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArrayViewHolder {
@@ -61,6 +56,5 @@ class BluetToothAdapter :
     override fun onBindViewHolder(holder: ArrayViewHolder, position: Int) {
         holder.setData(getItem(position))
     }
-
 
 }
