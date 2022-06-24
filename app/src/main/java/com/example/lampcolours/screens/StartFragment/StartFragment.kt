@@ -15,6 +15,8 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
+import com.example.lampcolours.CURRENT_MAC
+import com.example.lampcolours.SHARED_PREF_FILE_NAME
 import com.example.lampcolours.adapters.BluetToothAdapter
 import com.example.lampcolours.bt.BlueToothConnection
 import com.example.lampcolours.databinding.FragmentStartBinding
@@ -34,8 +36,6 @@ class StartFragment : Fragment() {
     private lateinit var adapter: BluetToothAdapter
     lateinit var btConnection: BlueToothConnection
     lateinit var binding: FragmentStartBinding
-    val SHARED_PREF_FILE_NAME = "SharedPrefs"
-    val CURRENT_MAC = "mac"
     var brightness = 10
     var onoff = 0
     var red = 255
@@ -43,6 +43,7 @@ class StartFragment : Fragment() {
     var blue = 255
     lateinit var color: Color
     lateinit var currentMac: String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,7 +62,7 @@ class StartFragment : Fragment() {
         getSharedPref()
         val onoffswitcher = binding.switcher
         val colorpicker = binding.colorPicker
-        if (btAdapter?.isEnabled == true && currentMac != null) {
+        if (btAdapter?.isEnabled == true && currentMac != "null") {
             btConnection.connect(currentMac)
         }
 

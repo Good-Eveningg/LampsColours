@@ -8,26 +8,22 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
+
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.Build
+
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
-
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import com.example.lampcolours.CURRENT_MAC
 import com.example.lampcolours.MainActivity
 import com.example.lampcolours.R
+import com.example.lampcolours.SHARED_PREF_FILE_NAME
 import com.example.lampcolours.adapters.BluetToothAdapter
-import com.example.lampcolours.bt.BlueToothConnection
 import com.example.lampcolours.bt.BluetoothItem
 import com.example.lampcolours.databinding.FragmentBlueToothBinding
-import com.example.lampcolours.screens.StartFragment.StartFragment
 import kotlinx.android.synthetic.main.fragment_blue_tooth.*
 
 const val REQUEST_ENABLE_BT = 15
@@ -38,8 +34,6 @@ class BlueToothFragment : Fragment() {
     val btAdapter by lazy { btManager?.adapter }
     private lateinit var adapter: BluetToothAdapter
     val tempList = ArrayList<BluetoothItem>()
-    val SHARED_PREF_FILE_NAME = "SharedPrefs"
-    val CURRENT_MAC = "mac"
     lateinit var mainActivity: MainActivity
     private lateinit var sharedPref: SharedPreferences
 
@@ -80,6 +74,7 @@ class BlueToothFragment : Fragment() {
         } else {
             btAdapter?.disable()
             floatingActionButton.setImageResource(R.drawable.ic_enable_bluetooth_white)
+            binding.connectButton.hide()
             tempList.clear()
             binding.rvBtItems.adapter = adapter
             adapter.submitList(tempList)

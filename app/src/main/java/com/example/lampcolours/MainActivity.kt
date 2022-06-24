@@ -1,5 +1,6 @@
 package com.example.lampcolours
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -16,10 +17,14 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var toggle: ActionBarDrawerToggle
     var lastclicked = 0
+    lateinit var currentMac: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         permissionsChecker()
+        getSharedPref()
+        firstScreenMode()
         toggle = ActionBarDrawerToggle(this, drawer_layout, R.string.open, R.string.close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
@@ -79,6 +84,26 @@ class MainActivity : AppCompatActivity() {
     fun navigate() {
         supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
             .commit()
+    }
+
+    private fun getSharedPref(): String? {
+        val sharedPref = getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+        currentMac = sharedPref?.getString(CURRENT_MAC, null).toString()
+        return sharedPref?.getString(CURRENT_MAC, null)
+    }
+
+    private fun firstScreenMode(){
+        if (currentMac == "null"){
+            supportFragmentManager.beginTransaction().replace(
+                R.id.nav_host_fragment,
+                BlueToothFragment(), "BT"
+            ).commit()
+            lastclicked = 2
+        } else{
+            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
+                .commit()
+            lastclicked = 1
+        }
     }
 }
 
