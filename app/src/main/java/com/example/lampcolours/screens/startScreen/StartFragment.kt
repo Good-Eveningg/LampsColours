@@ -2,7 +2,6 @@ package com.example.lampcolours.screens.startScreen
 
 import android.R
 import android.bluetooth.BluetoothManager
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,15 +14,11 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
-import com.example.lampcolours.CURRENT_MAC
-import com.example.lampcolours.SHARED_PREF_FILE_NAME
-import com.example.lampcolours.screens.adapters.DevicesListAvailableForBlueToothConnectAdapter
-import com.example.lampcolours.data.repositories.blueToothRepo.BlueToothRepoImpl
-import com.example.lampcolours.data.blueTooth.ConnectedDeviceCommunicationImpl
+
 import com.example.lampcolours.databinding.FragmentStartBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import vadiole.colorpicker.ColorModel
 import vadiole.colorpicker.ColorPickerDialog
-import java.lang.Exception
 
 
 class StartFragment : Fragment() {
@@ -34,16 +29,15 @@ class StartFragment : Fragment() {
         )
     }
     private val btAdapter by lazy { btManager?.adapter }
-    private lateinit var adapter: DevicesListAvailableForBlueToothConnectAdapter
-    lateinit var btConnection: BlueToothRepoImpl
+
+
+    private val startViewModel by viewModel<StartViewModel>()
     lateinit var binding: FragmentStartBinding
-    var brightness = 10
+
     var onoff = 0
-    var red = 255
-    var green = 255
-    var blue = 255
+
     lateinit var color: Color
-    lateinit var currentMac: String
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,18 +52,12 @@ class StartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val brightnessSeek = binding.seekBar
         val brightnessText = binding.brightnessStatus
-        adapter = DevicesListAvailableForBlueToothConnectAdapter()
-
-        val dsfd  = ConnectedDeviceCommunicationImpl()
-        btConnection = btAdapter?.let {
-            BlueToothRepoImpl(it, )
-        }!!
-        getSharedPref()
+        startViewModel.getBrightness()?.let { binding.seekBar.progress = it }
+        brightnessText.text = startViewModel.getBrightness().toString()
         val onoffswitcher = binding.switcher
         val colorpicker = binding.colorPicker
-        if (btAdapter?.isEnabled == true && currentMac != "null") {
-            btConnection.connectDeviceToArduino(currentMac)
-        }
+
+
 
         brightnessSeek.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -77,28 +65,32 @@ class StartFragment : Fragment() {
                 seek: SeekBar,
                 progress: Int, fromUser: Boolean
             ) {
-                brightness = brightnessSeek.progress
-                brightnessText.text = brightness.toString()
+                startViewModel.saveBrightnessValue(brightnessSeek.progress)
+                brightnessText.text = startViewModel.getBrightness().toString()
 
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
-                brightnessSeek.progress = brightness
+                brightnessSeek.progress = startViewModel.getBrightness()!!
             }
 
             override fun onStopTrackingTouch(seek: SeekBar) {
 
                 Toast.makeText(
-                    context, "Уровень яркости: " + seek.progress + "%",
+                    context, "Уровень яркости: " + "${startViewModel.getBrightness()}" + "%",
                     Toast.LENGTH_LONG
                 ).show()
                 if (onoff == 1) {
-                    btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
+                    startViewModel.sendMessageToArduino(
+                        "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
+                                "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
+                        btAdapter!!
+                    )
                 }
             }
 
         })
-        brightnessSeek.progress = brightness
+        brightnessSeek.progress = startViewModel.getBrightness()!!
 
 
         onoffswitcher.setOnCheckedChangeListener { _, isChecked ->
@@ -109,7 +101,12 @@ class StartFragment : Fragment() {
                     } else {
                         0
                     }
-                    btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
+                    startViewModel.sendMessageToArduino(
+                        "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
+                                "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
+                        btAdapter!!
+                    )
+
                 } else {
                     Toast.makeText(
                         context, "Switch on BT",
@@ -126,30 +123,32 @@ class StartFragment : Fragment() {
 
         colorpicker.setOnClickListener {
             val colorPicker: ColorPickerDialog = ColorPickerDialog.Builder()
-                .setInitialColor(Color.rgb(red, green, blue))
+                .setInitialColor(
+                    Color.rgb(
+                        startViewModel.getRedColor()!!,
+                        startViewModel.getGreenColor()!!, startViewModel.getBlueColor()!!
+                    )
+                )
                 .setColorModel(ColorModel.RGB)
                 .setColorModelSwitchEnabled(true)
                 .setButtonOkText(R.string.ok)
                 .setButtonCancelText(R.string.cancel)
                 .onColorSelected { color: Int ->
-                    red = color.red
-                    green = color.green
-                    blue = color.blue
+                    startViewModel.saveRedColorValueRGB(color.red)
+                    startViewModel.saveGreenColorValueRGB(color.green)
+                    startViewModel.saveBlueColorValueRGB(color.blue)
                     if (onoff == 1) {
-                        btConnection.sendMessageToArduino("$red $green $blue $brightness $onoff")
+                        startViewModel.sendMessageToArduino(
+                            "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
+                                    "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
+                            btAdapter!!
+                        )
                     }
                 }
                 .create()
             colorPicker.show(childFragmentManager, "color_picker")
         }
     }
-
-    private fun getSharedPref(): String? {
-        val sharedPref = context?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
-        currentMac = sharedPref?.getString(CURRENT_MAC, null).toString()
-        return sharedPref?.getString(CURRENT_MAC, null)
-    }
-
 
 }
 

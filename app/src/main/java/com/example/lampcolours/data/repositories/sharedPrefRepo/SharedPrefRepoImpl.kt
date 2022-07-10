@@ -14,7 +14,7 @@ class SharedPrefRepoImpl(
             context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
         editor.putString(CURRENT_MAC, mac)
-        editor.apply()
+        editor.commit()
         return sharedPref
     }
 

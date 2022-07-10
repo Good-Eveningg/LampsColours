@@ -10,9 +10,12 @@ import com.example.lampcolours.R
 import com.example.lampcolours.models.domain.BluetoothItem
 import com.example.lampcolours.databinding.ItemLayoutBinding
 import com.example.lampcolours.screens.blueToothScreen.BlueToothFragment
+import com.example.lampcolours.screens.blueToothScreen.BlueToothViewModel
 
 class DevicesListAvailableForBlueToothConnectAdapter :
-    ListAdapter<BluetoothItem, DevicesListAvailableForBlueToothConnectAdapter.ArrayViewHolder>(ArrayComparator()) {
+    ListAdapter<BluetoothItem, DevicesListAvailableForBlueToothConnectAdapter.ArrayViewHolder>(
+        ArrayComparator()
+    ) {
 
     override fun onViewAttachedToWindow(holder: ArrayViewHolder) {
         super.onViewAttachedToWindow(holder)

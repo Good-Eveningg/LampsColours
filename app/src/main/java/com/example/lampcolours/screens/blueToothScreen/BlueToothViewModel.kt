@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.lampcolours.data.repositories.blueToothRepo.BlueToothRepoImpl
 import com.example.lampcolours.data.repositories.sharedPrefRepo.SharedPrefRepoImpl
 import com.example.lampcolours.models.domain.BluetoothItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BlueToothViewModel(
@@ -18,16 +19,7 @@ class BlueToothViewModel(
     private val mDevicesListToBTConnect = MutableLiveData<List<BluetoothItem>>()
     val devicesListToBTConnect: LiveData<List<BluetoothItem>> = mDevicesListToBTConnect
 
-    fun connectDevice(
-        mac: String?, adapter: BluetoothAdapter?
-    ) {
-        viewModelScope.launch {
-            sharedPrefRepoImpl.saveData(mac)
-            if (adapter != null) {
-                blueToothRepoImpl.connectDeviceToArduino(mac, adapter)
-            }
-        }
-    }
+
 
     fun getDevicesList(btAdapter: BluetoothAdapter) {
         mDevicesListToBTConnect.postValue(
@@ -37,4 +29,7 @@ class BlueToothViewModel(
         )
     }
 
+    fun saveMac(mac: String?) {
+        sharedPrefRepoImpl.saveData(mac)
+    }
 }

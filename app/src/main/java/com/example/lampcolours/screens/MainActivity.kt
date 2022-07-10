@@ -1,18 +1,15 @@
 package com.example.lampcolours.screens
 
-import android.content.Context
-import android.content.pm.PackageManager
+import android.bluetooth.BluetoothManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.lampcolours.CURRENT_MAC
 import com.example.lampcolours.R
-import com.example.lampcolours.SHARED_PREF_FILE_NAME
+import com.example.lampcolours.REQUEST_ENABLE_BT
 import com.example.lampcolours.screens.blueToothScreen.BlueToothFragment
-import com.example.lampcolours.screens.blueToothScreen.REQUEST_ENABLE_BT
 import com.example.lampcolours.screens.startScreen.StartFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,24 +18,35 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private var lastclicked = 0
-    private lateinit var currentMac: String
-
+    private var currentMac: String? = null
+    private val btManager by lazy {
+        ContextCompat.getSystemService(
+            this,
+            BluetoothManager::class.java
+        )
+    }
+    private val btAdapter by lazy { btManager?.adapter }
     private val mainActivityViewModel by viewModel<MainActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        permissionsChecker()
+        isPermissionGaranted()
+        currentMac = mainActivityViewModel.getMac().toString()
+        if (isPermissionGaranted()) {
+            mainActivityViewModel.connectDevice(currentMac, btAdapter)
+        }
 
         mainActivityViewModel.myCurrentMacLiveData.observe(this) {
-            lastclicked = if (currentMac == "null"){
+            lastclicked = if (currentMac == "null") {
                 supportFragmentManager.beginTransaction().replace(
                     R.id.nav_host_fragment,
                     BlueToothFragment(), "BT"
                 ).commit()
                 2
-            } else{
-                supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, StartFragment())
                     .commit()
                 1
             }
@@ -57,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.nav_host_fragment, StartFragment()).commit()
                         lastclicked = it.itemId
+
                     }
                     drawer_layout.close()
                 }
@@ -67,7 +76,6 @@ class MainActivity : AppCompatActivity() {
                             BlueToothFragment(), "BT"
                         ).commit()
                         lastclicked = it.itemId
-
                     }
                     drawer_layout.close()
                 }
@@ -83,36 +91,36 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun permissionsChecker() {
+    private fun isPermissionGaranted(): Boolean {
         if (Build.VERSION.SDK_INT >= 30) {
-            if (ContextCompat.checkSelfPermission(
-                    applicationContext,
-                    android.Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-
-            } else {
+            if (!mainActivityViewModel.checkPermission()) {
                 requestPermissions(
                     arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT),
                     REQUEST_ENABLE_BT
                 )
             }
         }
+        return true
+
     }
 
-    private fun firstScreenMode(){
-        lastclicked = if (currentMac == "null"){
-            supportFragmentManager.beginTransaction().replace(
-                R.id.nav_host_fragment,
-                BlueToothFragment(), "BT"
-            ).commit()
-            2
-        } else{
-            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
-                .commit()
-            1
-        }
+    fun setLastClicked() {
+        lastclicked = 1
     }
+
+//    private fun firstScreenMode(){
+//        lastclicked = if (currentMac == "null"){
+//            supportFragmentManager.beginTransaction().replace(
+//                R.id.nav_host_fragment,
+//                BlueToothFragment(), "BT"
+//            ).commit()
+//            2
+//        } else{
+//            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, StartFragment())
+//                .commit()
+//            1
+//        }
+//    }
 
 }
 

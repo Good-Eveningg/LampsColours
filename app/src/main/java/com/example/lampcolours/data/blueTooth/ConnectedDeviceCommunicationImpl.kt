@@ -9,7 +9,7 @@ import java.util.*
 
 class ConnectedDeviceCommunicationImpl {
     private val uuid = "00001101-0000-1000-8000-00805F9B34FB"
-    private var mySocket: BluetoothSocket? = null
+   var mySocket: BluetoothSocket? = null
 
     fun createConnectionSocket(mac: String, btAdapter: BluetoothAdapter): BluetoothSocket? {
         try {
@@ -26,13 +26,17 @@ class ConnectedDeviceCommunicationImpl {
             Log.d("My device", "Connecting")
             mySocket?.connect()
 
-        } catch (i: IOException) {
+       } catch (i: IOException) {
             Log.d("My device", "Failed")
             closeConnection()
         }
     }
 
-    private fun closeConnection() {
+    fun getSocketState(): Boolean? {
+        return mySocket?.isConnected
+    }
+
+    fun closeConnection() {
         try {
             mySocket?.close()
         } catch (i: IOException) {
