@@ -13,33 +13,21 @@ import kotlinx.coroutines.launch
 class StartViewModel(
     private val blueToothRepoImpl: BlueToothRepoImpl,
     private val colorRepoImpl: ColorRepoImpl,
-    private val sharedPrefRepoImpl: SharedPrefRepoImpl
 ) : ViewModel() {
 
-    private var arduinoMessage: Boolean = false
 
-    fun sendMessageToArduino(message: String, adapter: BluetoothAdapter) {
-        if (getSocketState() == true) {
+    fun sendMessageToArduino(message: String) {
+        try {
             blueToothRepoImpl.sendMessageToArduino(message)
-        } else {
-            try {
-                blueToothRepoImpl.connectDeviceToArduino(getMac(), adapter)
-                blueToothRepoImpl.sendMessageToArduino(message)
-            } catch (i: Exception) {
-                Log.d("My device", "Failed to send message")
-            }
+        } catch (i: Exception) {
+            Log.d("My device", "Failed to send message")
         }
+
     }
 
-    private fun getMac(): String? {
-        return sharedPrefRepoImpl.getSharedPref()
+    fun getSwitchOnOffStatus(): Int? {
+        return colorRepoImpl.getSwitchOnOffStatus()
     }
-
-    fun getSocketState(): Boolean? {
-        return blueToothRepoImpl.getSocketState()
-    }
-
-
 
 
     fun saveRedColorValueRGB(redColorValue: Int?) {
@@ -60,6 +48,10 @@ class StartViewModel(
 
     fun getRedColor(): Int? {
         return colorRepoImpl.getRedColorValueRGB()
+    }
+
+    fun getSocketState(): Boolean? {
+        return blueToothRepoImpl.getSocketState()
     }
 
     fun getGreenColor(): Int? {

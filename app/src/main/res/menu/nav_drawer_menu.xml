@@ -2,11 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/colorPicker"
-        android:icon="@drawable/ic_chose_color"
+        android:icon="@drawable/ic_baseline_flashlight"
         android:title="Выбор цвета" />
     <item
         android:id="@+id/bluetoothChooser"
         android:icon="@drawable/ic_bluetooth_connection"
         android:title="Выбор устройства" />
+    <item
+        android:id="@+id/colorPalette"
+        android:icon="@drawable/ic_chose_color"
+        android:title="Палитра" />
 
 </menu>

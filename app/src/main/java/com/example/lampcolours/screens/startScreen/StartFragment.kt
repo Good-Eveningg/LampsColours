@@ -1,6 +1,7 @@
 package com.example.lampcolours.screens.startScreen
 
 import android.R
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.graphics.Color
 import android.os.Bundle
@@ -14,7 +15,7 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
-
+import com.example.lampcolours.APP
 import com.example.lampcolours.databinding.FragmentStartBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import vadiole.colorpicker.ColorModel
@@ -33,10 +34,7 @@ class StartFragment : Fragment() {
 
     private val startViewModel by viewModel<StartViewModel>()
     lateinit var binding: FragmentStartBinding
-
-    var onoff = 0
-
-    lateinit var color: Color
+    private var onoff = 0
 
 
     override fun onCreateView(
@@ -44,10 +42,12 @@ class StartFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentStartBinding.inflate(inflater, container, false)
+        APP.setLastClicked(0)
         return binding.root
 
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val brightnessSeek = binding.seekBar
@@ -56,8 +56,10 @@ class StartFragment : Fragment() {
         brightnessText.text = startViewModel.getBrightness().toString()
         val onoffswitcher = binding.switcher
         val colorpicker = binding.colorPicker
-
-
+        if (startViewModel.getSwitchOnOffStatus() == 1) {
+            startViewModel.getSocketState()?.let { setSwitcher(it) }
+        }
+        startViewModel.getBrightness()?.let { brightnessSeek.progress = it }
 
         brightnessSeek.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -76,15 +78,11 @@ class StartFragment : Fragment() {
 
             override fun onStopTrackingTouch(seek: SeekBar) {
 
-                Toast.makeText(
-                    context, "Уровень яркости: " + "${startViewModel.getBrightness()}" + "%",
-                    Toast.LENGTH_LONG
-                ).show()
+
                 if (onoff == 1) {
                     startViewModel.sendMessageToArduino(
                         "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
-                                "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
-                        btAdapter!!
+                                "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff"
                     )
                 }
             }
@@ -96,16 +94,20 @@ class StartFragment : Fragment() {
         onoffswitcher.setOnCheckedChangeListener { _, isChecked ->
             try {
                 if (btAdapter?.isEnabled == true) {
-                    onoff = if (isChecked) {
-                        1
+                    if (startViewModel.getSocketState() == true) {
+                        onoff = if (isChecked) {
+                            1
+                        } else {
+                            0
+                        }
+                        startViewModel.sendMessageToArduino(
+                            "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
+                                    "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff"
+                        )
                     } else {
-                        0
+                        Toast.makeText(context, "Устройство не подключено", Toast.LENGTH_SHORT)
+                            .show()
                     }
-                    startViewModel.sendMessageToArduino(
-                        "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
-                                "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
-                        btAdapter!!
-                    )
 
                 } else {
                     Toast.makeText(
@@ -114,10 +116,7 @@ class StartFragment : Fragment() {
                     ).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(
-                    context, "Connect to the Device",
-                    Toast.LENGTH_SHORT
-                ).show()
+
             }
         }
 
@@ -138,11 +137,15 @@ class StartFragment : Fragment() {
                     startViewModel.saveGreenColorValueRGB(color.green)
                     startViewModel.saveBlueColorValueRGB(color.blue)
                     if (onoff == 1) {
-                        startViewModel.sendMessageToArduino(
-                            "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
-                                    "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff",
-                            btAdapter!!
-                        )
+                        if (startViewModel.getSocketState() == true) {
+                            startViewModel.sendMessageToArduino(
+                                "${startViewModel.getRedColor()} ${startViewModel.getGreenColor()} " +
+                                        "${startViewModel.getBlueColor()} ${startViewModel.getBrightness()} $onoff"
+                            )
+                        }
+                    } else {
+                        Toast.makeText(context, "Устройство не подключено", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
                 .create()
@@ -150,6 +153,9 @@ class StartFragment : Fragment() {
         }
     }
 
+    fun setSwitcher(state : Boolean){
+        binding.switcher.isChecked = state
+    }
 }
 
 

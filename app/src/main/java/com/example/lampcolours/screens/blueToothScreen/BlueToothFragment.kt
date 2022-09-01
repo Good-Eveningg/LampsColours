@@ -1,9 +1,11 @@
 package com.example.lampcolours.screens.blueToothScreen
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -11,8 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import com.example.lampcolours.APP
 import com.example.lampcolours.R
 import com.example.lampcolours.REQUEST_ENABLE_BT
 import com.example.lampcolours.databinding.FragmentBlueToothBinding
@@ -34,10 +38,9 @@ class BlueToothFragment : Fragment() {
             BluetoothManager::class.java
         )
     }
+
     private val btAdapter by lazy { btManager?.adapter }
     private val adapter: DevicesListAvailableForBlueToothConnectAdapter by lazy { DevicesListAvailableForBlueToothConnectAdapter() }
-
-    //    private val tempList = ArrayList<BluetoothItem>()
     private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
@@ -45,6 +48,7 @@ class BlueToothFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentBlueToothBinding.inflate(inflater, container, false)
+        APP.setLastClicked(1)
         return binding.root
     }
 
@@ -58,7 +62,6 @@ class BlueToothFragment : Fragment() {
         fab.imageTintList = ColorStateList.valueOf(Color.WHITE)
         val bap = binding.connectButton
         bap.imageTintList = ColorStateList.valueOf(Color.WHITE)
-
         setImage()
 
 
@@ -73,10 +76,7 @@ class BlueToothFragment : Fragment() {
 
         binding.connectButton.setOnClickListener {
             blueToothViewModel.saveMac(currentMAC)
-            mainActivity.setLastClicked()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment, StartFragment())
-                .commit()
+            APP.navController.navigate(R.id.action_blueToothFragment_to_startFragment)
             Toast.makeText(view.context, "Saved MAC: $currentMAC", Toast.LENGTH_LONG).show()
         }
     }
@@ -88,6 +88,22 @@ class BlueToothFragment : Fragment() {
             binding.connectButton.show()
 
         } else {
+            if (context?.let {
+                    ActivityCompat.checkSelfPermission(
+                        it,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    )
+                } != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             btAdapter?.disable()
             floatingActionButton.setImageResource(R.drawable.ic_enable_bluetooth_white)
             binding.connectButton.hide()

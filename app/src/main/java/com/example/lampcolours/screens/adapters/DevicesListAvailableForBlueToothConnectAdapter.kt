@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lampcolours.R
+import com.example.lampcolours.databinding.BtListItemBinding
 import com.example.lampcolours.models.domain.BluetoothItem
-import com.example.lampcolours.databinding.ItemLayoutBinding
 import com.example.lampcolours.screens.blueToothScreen.BlueToothFragment
-import com.example.lampcolours.screens.blueToothScreen.BlueToothViewModel
 
 class DevicesListAvailableForBlueToothConnectAdapter :
     ListAdapter<BluetoothItem, DevicesListAvailableForBlueToothConnectAdapter.ArrayViewHolder>(
@@ -26,7 +25,7 @@ class DevicesListAvailableForBlueToothConnectAdapter :
     }
 
     class ArrayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding = ItemLayoutBinding.bind(view)
+        private val binding = BtListItemBinding.bind(view)
 
         fun setData(item: BluetoothItem) {
             binding.name.text = item.name
@@ -36,7 +35,7 @@ class DevicesListAvailableForBlueToothConnectAdapter :
         companion object {
             fun create(parent: ViewGroup): ArrayViewHolder {
                 return ArrayViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+                    LayoutInflater.from(parent.context).inflate(R.layout.bt_list_item, parent, false)
                 )
             }
         }

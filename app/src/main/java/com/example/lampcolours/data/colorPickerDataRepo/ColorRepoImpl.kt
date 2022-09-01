@@ -17,6 +17,7 @@ class ColorRepoImpl(private val context: Context) {
         return redSharedPref
     }
 
+
     fun saveGreenColorValueRGB(greenColorValue: Int?): SharedPreferences {
         val greenSharedPref =
             context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
@@ -49,6 +50,16 @@ class ColorRepoImpl(private val context: Context) {
         editor.apply()
         return brightnessSharedPref
     }
+    fun saveSwitchOnOffStatus(switchStatus: Int?):SharedPreferences{
+        val brightnessSharedPref =
+            context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+        val editor = brightnessSharedPref.edit()
+        if (switchStatus != null) {
+            editor.putInt(SWITCH_STATUS, switchStatus)
+        }
+        editor.apply()
+        return brightnessSharedPref
+    }
 
     fun getRedColorValueRGB(): Int? {
         val redSharedPref =
@@ -72,6 +83,12 @@ class ColorRepoImpl(private val context: Context) {
         val brightnessSharedPref =
             context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
         return brightnessSharedPref?.getInt(BRIGHTNESS_KEY, DEFAULT_BRIGHTNESS_VALUE)
+    }
+
+    fun getSwitchOnOffStatus():Int?{
+        val brightnessSharedPref =
+            context.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+        return brightnessSharedPref?.getInt(SWITCH_STATUS, DEFAULT_SWITCH)
     }
 
 

@@ -1,10 +1,14 @@
 package com.example.lampcolours.screens
 
 import android.bluetooth.BluetoothAdapter
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lampcolours.data.colorPickerDataRepo.ColorRepoImpl
 import com.example.lampcolours.data.repositories.blueToothRepo.BlueToothRepoImpl
 import com.example.lampcolours.data.repositories.permissionRepo.PermissionRepoImpl
 import com.example.lampcolours.data.repositories.sharedPrefRepo.SharedPrefRepoImpl
@@ -14,11 +18,13 @@ import kotlinx.coroutines.launch
 class MainActivityViewModel(
     private val sharedPrefRepoImpl: SharedPrefRepoImpl,
     private val permissionRepoImpl: PermissionRepoImpl,
-    private val blueToothRepoImpl: BlueToothRepoImpl
+    private val blueToothRepoImpl: BlueToothRepoImpl,
+    private val colorRepoImpl: ColorRepoImpl
 ) : ViewModel() {
 
     private val mMyCurrentMacLiveData = MutableLiveData<String>()
     val myCurrentMacLiveData: LiveData<String> = mMyCurrentMacLiveData
+    private var lastClickedValue = 0
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -34,6 +40,7 @@ class MainActivityViewModel(
                 while (blueToothRepoImpl.getSocketState() != true) {
                     try {
                         blueToothRepoImpl.connectDeviceToArduino(mac, adapter)
+
                     } catch (i: Exception) {
 
                     }
@@ -43,6 +50,47 @@ class MainActivityViewModel(
         }
     }
 
+    fun getSocketState(): Boolean? {
+        return blueToothRepoImpl.getSocketState()
+    }
+
+    fun setSocketState(state: Boolean) {
+        blueToothRepoImpl.setSocketState(state)
+    }
+
+    fun setLastClicked(lastClicked: Int) {
+        lastClickedValue = lastClicked
+    }
+
+    fun saveRedColorValueRGB(redColorValue: Int?) {
+        colorRepoImpl.saveRedColorValueRGB(redColorValue)
+    }
+
+    fun saveGreenColorValueRGB(greenColorValue: Int?) {
+        colorRepoImpl.saveGreenColorValueRGB(greenColorValue)
+    }
+
+    fun saveBlueColorValueRGB(blueColorValue: Int?) {
+        colorRepoImpl.saveBlueColorValueRGB(blueColorValue)
+    }
+
+    fun saveBrightnessValue(brightnessValue: Int?) {
+        colorRepoImpl.saveBrightnessValue(brightnessValue)
+    }
+
+    fun saveSwitchOnOffStatus(switchStatus: Int) {
+        colorRepoImpl.saveSwitchOnOffStatus(switchStatus)
+    }
+
+    fun getLastClicked(): Int {
+        return lastClickedValue
+    }
+
+    fun closeConnection() {
+        blueToothRepoImpl.closeConnection()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
     fun checkPermission(): Boolean {
         return permissionRepoImpl.permissionsChecker()
     }
@@ -51,5 +99,12 @@ class MainActivityViewModel(
         return sharedPrefRepoImpl.getSharedPref()
     }
 
+    fun sendMessageToArduino(message: String) {
+        try {
+            blueToothRepoImpl.sendMessageToArduino(message)
+        } catch (i: Exception) {
+            Log.d("My device", "Failed to send message")
+        }
+    }
 
 }

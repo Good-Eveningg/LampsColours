@@ -3,16 +3,28 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3255" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_baseline_add.xml" value="0.3255" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_baseline_flashlight.xml" value="0.3255" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_baseline_lens_24.xml" value="0.3255" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_bluetooth_connection.xml" value="0.2495" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_chose_color.xml" value="0.2495" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_connect.xml" value="0.3365" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_disable_bluetooth.xml" value="0.3365" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_enable_bluetooth_white.xml" value="0.3255" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3255" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/drawable/ic_save.xml" value="0.3255" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/bt_item.xml" value="0.24270833333333333" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/bt_list_item.xml" value="0.3736413043478261" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/fragment_blue_tooth.xml" value="0.12236286919831224" />
-        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/fragment_start.xml" value="0.35479951397326853" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/fragment_color_palette.xml" value="0.29347826086956524" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/fragment_detailed.xml" value="0.33" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/fragment_start.xml" value="0.3296969696969697" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/item_layout.xml" value="0.67" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/nav_header.xml" value="0.21808510638297873" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/palette_item.xml" value="0.29347826086956524" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/layout/pallette_item.xml" value="0.29347826086956524" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/menu/bt_fragment_menu.xml" value="0.24270833333333333" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/menu/nav_draver_menu.xml" value="0.44256410256410256" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/LampColours/app/src/main/res/menu/nav_drawer_menu.xml" value="0.44256410256410256" />
